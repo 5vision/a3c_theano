@@ -126,9 +126,13 @@ def run_checkpoint(process, env, weights_shared, global_step, best_reward,
                 with open('weights_steps_{}_reward_{}.pkl'.format(global_step.value, int(reward_mean)), 'wb') as f:
                     cPickle.dump(param_values, f, -1)
 
-
-        print 'Global step: {}, steps/sec: {:.2f}, episode length {}, r_plus {:.2f}, reward: {:.2f}, best reward: {:.2f}'. \
+        report_str = 'Global step: {}, steps/sec: {:.2f}, episode length {}, r_plus {:.2f}, reward: {:.2f}, best reward: {:.2f}'. \
             format(global_step.value, 1. * global_step.value / (time() - start), step, total_rplus, total_reward, best_reward.value)
+        print report_str
+
+        if process == 0:
+            with open('report_checkpoints.log', 'a') as f:
+                f.write(report_str + '\n')
 
 
 def run(process, env, weights_shared, global_step, best_reward,
@@ -226,6 +230,6 @@ def run(process, env, weights_shared, global_step, best_reward,
             format(global_step.value, 1.*global_step.value/(time() - start), mean_val/step, step, total_rplus, total_reward, best_reward.value)
         print report_str
 
-        if epoch % 1 == 0 and process == 0:
-            with open('report.txt', 'a') as f:
+        if process == 0:
+            with open('report.log', 'a') as f:
                 f.write(report_str + '\n')
